@@ -28,31 +28,30 @@ open class UniversalApkGenerator : DefaultTask() {
     lateinit var aapt2Path: File
     // Signing config
     @get:InputFile
-    lateinit var storeFile: File
+    var storeFile: File? = null
     @get:Input
-    lateinit var keyAlias: String
+    var keyAlias: String? = null
     @get:Input
-    lateinit var storePassword: String
+    var storePassword: String? = null
     @get:Input
-    lateinit var keyPassword: String
+    var keyPassword: String? = null
 
     @TaskAction
     fun execute() {
         val tempApksPath = project.buildDir.resolve("intermediates/apks/$variantDirName/universal.apks")
 
+        val signingConfiguration = SigningConfiguration.extractFromKeystore(
+            storeFile?.toPath(),
+            keyAlias,
+            storePassword?.optionalPassword(),
+            keyPassword?.optionalPassword()
+        )
         val apkCommandBuilder = BuildApksCommand.builder()
             .setBundlePath(inputBundle.toPath())
             .setOutputFile(tempApksPath.toPath())
             .setApkBuildMode(BuildApksCommand.ApkBuildMode.UNIVERSAL)
             .setOverwriteOutput(true)
-            .setSigningConfiguration(
-                SigningConfiguration.extractFromKeystore(
-                    storeFile.toPath(),
-                    keyAlias,
-                    storePassword.optionalPassword(),
-                    keyPassword.optionalPassword()
-                )
-            )
+            .setSigningConfiguration(signingConfiguration)
             .setAapt2Command(Aapt2Command.createFromExecutablePath(aapt2Path.toPath()))
             .setOutputPrintStream(System.out)
             .build()
@@ -70,6 +69,4 @@ open class UniversalApkGenerator : DefaultTask() {
     }
 }
 
-private fun String.optionalPassword() = Optional.of(Password(Supplier {
-    KeyStore.PasswordProtection(this@optionalPassword.toCharArray())
-}))
+private fun String.optionalPassword() = Optional.of(Password.createForTest(this))

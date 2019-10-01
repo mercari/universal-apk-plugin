@@ -38,8 +38,8 @@ dependencies {
     implementation(gradleApi())
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
 
-    implementation("com.android.tools.build:gradle:3.4.2")
-    implementation("com.android.tools.build:bundletool:0.10.2")
+    implementation("com.android.tools.build:gradle:3.5.0")
+    implementation("com.android.tools.build:bundletool:0.9.0")
 
     testImplementation(gradleTestKit())
 }

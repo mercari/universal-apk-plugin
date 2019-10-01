@@ -2,10 +2,12 @@ package com.mercari.gradle.universal
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.internal.tasks.BundleToApkTask
 import com.android.builder.model.SigningConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.getByName
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -35,11 +37,14 @@ fun Project.setupUniversalApkGenerationTask(appExtension: AppExtension, variant:
     )
     require(Files.exists(aapt2)) { "Couldn't find build-tools/${appExtension.buildToolsVersion} in ${appExtension.sdkDirectory}" }
 
+    val bundleToApkTask: BundleToApkTask =
+        tasks.getByName("makeApkFromBundleFor$variantCapitalized", BundleToApkTask::class)
+
     project.tasks.create(
         "generate${variantCapitalized}UniversalApk",
         UniversalApkGenerator::class.java
     ) {
-        dependsOn("bundle$variantCapitalized")
+        dependsOn(bundleToApkTask.name)
         group = "Build"
         description = "Generates Universal APK from AAB for variant ${variant.name}"
 

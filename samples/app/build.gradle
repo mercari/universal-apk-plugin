@@ -1,14 +1,8 @@
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
-buildscript {
-    repositories { mavenLocal() }
-    dependencies { classpath "com.mercari.gradle:universal-apk-plugin:1.0" }
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.mercari.gradle.universal-apk'
 
 android {
     compileSdkVersion = 29
